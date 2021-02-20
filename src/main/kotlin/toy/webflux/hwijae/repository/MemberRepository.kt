@@ -12,5 +12,5 @@ interface MemberRepository {
     fun save(member: Member): Mono<Member>
     fun findById(id: ObjectId): Mono<Member>
     fun findAll(): Flux<Member>
-    fun delete(member: Member): Mono<Void>
+    fun deleteDyId(id: ObjectId): Mono<Void>
 }
