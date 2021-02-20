@@ -1,4 +1,4 @@
-package toy.webflux.hwijae.domain.dto
+package toy.webflux.develop.domain.dto
 
 /**
  * Client에게 Member 리스트를 넘겨줄때 사용하는 Dto

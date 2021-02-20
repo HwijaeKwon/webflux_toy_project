@@ -1,4 +1,4 @@
-package toy.webflux.hwijae.domain.dto
+package toy.webflux.develop.domain.dto
 
 /**
  * Member 생성 요청에 대한 DTO

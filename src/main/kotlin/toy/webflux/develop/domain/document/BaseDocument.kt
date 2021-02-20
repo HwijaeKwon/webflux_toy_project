@@ -1,4 +1,4 @@
-package toy.webflux.hwijae.domain.document
+package toy.webflux.develop.domain.document
 
 import java.util.*
 
@@ -8,7 +8,7 @@ import java.util.*
  */
 abstract class BaseDocument {
 
-    private val createdAt: Date = Date()
+    private var createdAt: Date = Date()
 
-    fun getCreatedAt() = this.createdAt
+    fun getCreatedAt(): Date = this.createdAt
 }

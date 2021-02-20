@@ -1,6 +1,5 @@
-package toy.webflux.hwijae.domain.document
+package toy.webflux.develop.domain.document
 
-import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -12,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 class Member (private var name: String, private var age: Int) : BaseDocument() {
 
     @Id
-    private lateinit var _id : ObjectId
+    private lateinit var _id : String
 
     fun getId() = this._id
 
