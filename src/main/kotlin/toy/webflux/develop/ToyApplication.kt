@@ -1,11 +1,11 @@
-package toy.webflux.hwijae
+package toy.webflux.develop
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class HwijaeApplication
+class ToyApplication
 
 fun main(args: Array<String>) {
-	runApplication<HwijaeApplication>(*args)
+	runApplication<ToyApplication>(*args)
 }
