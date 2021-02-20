@@ -100,7 +100,7 @@ class MemberHandler(private val memberService: MemberService) {
     suspend fun deleteOne(request: ServerRequest): ServerResponse {
         val memberId = request.pathVariable("memberId")
         memberService.deleteById(memberId)
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait("Delete success")
+        return ServerResponse.ok().contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait("Delete success")
     }
 
     /**
@@ -108,6 +108,6 @@ class MemberHandler(private val memberService: MemberService) {
      */
     suspend fun deleteAll(request: ServerRequest): ServerResponse {
         memberService.deleteAll()
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait("Delete success")
+        return ServerResponse.ok().contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait("Delete success")
     }
 }
