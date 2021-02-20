@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import toy.webflux.develop.ToyApplication
 import toy.webflux.develop.domain.document.Member
+import toy.webflux.develop.domain.dto.MemberUpdate
 import toy.webflux.develop.repository.MemberRepository
 
 @SpringBootTest(classes = [ToyApplication::class])
@@ -55,10 +56,9 @@ internal class MemberServiceTest {
     @Test
     fun updateTeat() {
         val savedMember = runBlocking { memberRepository.save(Member("member", 10)).block()!! }
-        savedMember.update("updatedMember", null)
-        val updatedMember = runBlocking { memberService.update(savedMember) }
+        val updatedMember = runBlocking { memberService.update(savedMember.getId(), MemberUpdate("updatedMember", null)) }
         Assertions.assertThat(updatedMember).isNotNull
-        Assertions.assertThat(updatedMember!!.getName()).isEqualTo("updatedMember")
+        Assertions.assertThat(updatedMember.getName()).isEqualTo("updatedMember")
         Assertions.assertThat(updatedMember.getAge()).isEqualTo(10)
     }
 

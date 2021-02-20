@@ -5,6 +5,7 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.stereotype.Service
 import toy.webflux.develop.domain.document.Member
+import toy.webflux.develop.domain.dto.MemberUpdate
 import toy.webflux.develop.repository.MemberRepository
 
 /**
@@ -25,7 +26,9 @@ class MemberService(private val memberRepository: MemberRepository) {
         return memberRepository.findAll().collectList().awaitLast()
     }
 
-    suspend fun update(member: Member): Member? {
+    suspend fun update(id: String, memberUpdate: MemberUpdate): Member {
+        val member = memberRepository.findById(id).awaitSingleOrNull()?: throw IllegalArgumentException("Member not found")
+        member.update(memberUpdate.name, memberUpdate.age)
         return memberRepository.save(member).awaitSingle()
     }
 
