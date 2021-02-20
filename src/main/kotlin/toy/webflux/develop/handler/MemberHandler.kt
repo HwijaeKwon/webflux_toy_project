@@ -14,6 +14,7 @@ import toy.webflux.develop.domain.dto.MemberDtos
 import toy.webflux.develop.domain.dto.MemberUpdate
 import toy.webflux.develop.service.MemberService
 import toy.webflux.develop.validator.MemberCreateValidator
+import toy.webflux.develop.validator.MemberUpdateValidator
 
 /**
  * Member 관련 요청을 처리하는 handler function
@@ -29,7 +30,7 @@ class MemberHandler(private val memberService: MemberService) {
 
         val memberCreate = try { request.awaitBodyOrNull<MemberCreate>() } catch (e: Exception) { null } ?: run {
             val message = "Invalid request body: Request body is not valid."
-            return ServerResponse.status(400).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            return ServerResponse.status(400).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
 
         val errors = BeanPropertyBindingResult(memberCreate, MemberCreate::class.java.name)
@@ -37,16 +38,16 @@ class MemberHandler(private val memberService: MemberService) {
         if(errors.allErrors.isNotEmpty()) {
             var message = "Invalid request body: "
             errors.allErrors.forEach { error -> message += error.defaultMessage + " "}
-            return ServerResponse.status(400).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            return ServerResponse.status(400).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
 
         return try {
             val member = Member(memberCreate.name, memberCreate.age)
             val result = memberService.create(member)
             ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(MemberDto(result.getId(), result.getName(), result.getAge()))
-        } catch (e: IllegalStateException) {
+        } catch (e: IllegalArgumentException) {
             val message = "Create member failed: " + (e.message?: "")
-            ServerResponse.status(500).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            ServerResponse.status(500).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
     }
 
@@ -59,9 +60,9 @@ class MemberHandler(private val memberService: MemberService) {
         return try {
             val result = memberService.findOne(memberId)?: throw IllegalArgumentException("Member not found")
             ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(MemberDto(result.getId(), result.getName(), result.getAge()))
-        } catch (e: IllegalStateException) {
+        } catch (e: IllegalArgumentException) {
             val message = "Find member failed: " + (e.message?: "")
-            ServerResponse.status(404).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            ServerResponse.status(404).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
     }
 
@@ -70,7 +71,7 @@ class MemberHandler(private val memberService: MemberService) {
      */
     suspend fun findAll(request: ServerRequest): ServerResponse {
         val members = memberService.findAll()
-        val memberLists = members.map { it -> MemberDto(it.getId(), it.getName(), it.getAge()) }
+        val memberLists = members.map { MemberDto(it.getId(), it.getName(), it.getAge()) }
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(MemberDtos(memberLists.size, memberLists))
     }
 
@@ -78,19 +79,28 @@ class MemberHandler(private val memberService: MemberService) {
      *  member를 업데이트 한다
      */
     suspend fun update(request: ServerRequest): ServerResponse {
+        val validator = MemberUpdateValidator()
         val memberId = request.pathVariable("memberId")
 
         val memberUpdate = try { request.awaitBodyOrNull<MemberUpdate>() } catch (e: Exception) { null } ?: run {
             val message = "Invalid request body: Request body is not valid."
-            return ServerResponse.status(400).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            return ServerResponse.status(400).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
+        }
+
+        val errors = BeanPropertyBindingResult(memberUpdate, MemberCreate::class.java.name)
+        validator.validate(memberUpdate, errors)
+        if(errors.allErrors.isNotEmpty()) {
+            var message = "Invalid request body: "
+            errors.allErrors.forEach { error -> message += error.defaultMessage + " "}
+            return ServerResponse.status(400).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
 
         return try {
             val result = memberService.update(memberId, memberUpdate)
             ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(MemberDto(result.getId(), result.getName(), result.getAge()))
-        } catch (e: IllegalStateException) {
+        } catch (e: IllegalArgumentException) {
             val message = "Update member failed: " + (e.message?: "")
-            ServerResponse.status(404).contentType(MediaType.APPLICATION_JSON).bodyValueAndAwait(message)
+            ServerResponse.status(404).contentType(MediaType.TEXT_PLAIN).bodyValueAndAwait(message)
         }
     }
 
