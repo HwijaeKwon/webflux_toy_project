@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document
  */
 
 @Document
-class Member (private var name: String, private var age: Int) : BaseDocument() {
+class Member (private var name: String, private var age: Number) : BaseDocument() {
 
     @Id
     private lateinit var _id : String
@@ -19,7 +19,7 @@ class Member (private var name: String, private var age: Int) : BaseDocument() {
 
     fun getAge() = this.age
 
-    fun update(name: String?, age: Int?) {
+    fun update(name: String?, age: Number?) {
         name?.let { this.name = it }
         age?.let { this.age = it }
     }
